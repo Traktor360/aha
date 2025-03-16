@@ -1,0 +1,173 @@
+DHCP: 
+
+sudo apt install isc-dhcp-server
+sudo systemctl status isc-dhcp-server (failed)
+
+sudo nano /etc/default/isc-dhcp-server
+INTERFACESv4="enp0s8"
+
+sudo nano /etc/dhcp/dhcpd.conf
+authoritative;
+od subnet do konca
+subnet 192.168.10.0 netmask 255.255.255.0 {
+  range 192.168.10.200 192.168.10.220;
+  option domain-name-servers 192.168.10.10;
+  option domain-name "internal.example.org";
+  option subnet-mask 255.255.255.0;
+  option routers 192.168.10.10;
+  option broadcast-address 192.168.10.255;
+  default-lease-time 600;
+  max-lease-time 7200;
+}
+
+sudo systemctl restart isc-dhcp-server
+sudo systemctl status isc-dhcp-server
+
+
+NAT:
+
+sudo nano /etc/sysctl.conf
+net.ipv4.ip_forward=1
+sudo sysctl -p
+
+sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE (YES)
+sudo iptables-save
+DNS (8.8.8.8)
+
+
+DNS:
+
+sudo apt install -y bind9 bind9utils
+
+cd /etc/bind
+
+sudo nano named.conf.local
+
+zone "gamracy.local" IN {
+type master;
+file "/etc/bind/przod";
+};
+
+zone "10.168.192.in-addr.arpa" IN {
+type master;
+file "/etc/bind/tyl";
+};
+
+
+sudo cp /etc/bind/db.local /etc/bind/przod
+
+;
+;BIND data file for local loopback interface
+;
+$TTL    604800  
+@       IN      SOA     server.gamracy.local. root.gamracy.local. (
+                              3         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN       NS     localhost.
+@       IN       A      127.0.0.1
+@       IN       AAAA   ::1
+
+;
+@       IN       NS     server.gamracy.local.
+
+;
+server  IN       A      192.168.10.10
+
+;
+klient  IN       A      192.168.10.11
+
+;
+alKli1  IN       CNAME  klient.gamracy.local.
+
+================================================================================================
+================================================================================================
+
+sudo cp /etc/bind/db.127 /etc/bind/tyl
+
+;
+;BIND data file for local loopback interface
+;
+$TTL    604800  
+@       IN      SOA     gamracy.local. root.gamracy.local. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN       NS     localhost.
+1.0.0   IN       PTR    localhost.
+
+;
+@       IN       NS     server.gamracy.local.
+server  IN       A      192.168.10.10
+
+;
+10      IN       PTR    server.gamracy.local.
+
+;
+11      IN       PTR    klient.gamracy.local.
+
+
+
+sudo named-checkconf
+sudo named-checkzone gamracy.local przod
+sudo named-checkzone 10.168.192.in-addr.arpa tyl
+
+sudo nano /etc/resolv.conf
+
+!!! TO NA SERWERZE I KLIENCIE !!!
+nameserver 192.168.10.10
+option edns0 trust-ad
+search gamracy.local
+
+
+
+WWW:
+
+sudo apt install apache2
+sudo systemctl status apache2
+! wejdz na ip czy dziala strona !
+
+STRONA ZNAJDUJE SIE W /var/www/html/
+
+
+
+cd /etc/apache2/
+sudo nano sites-available/000-default.conf [ zmiana portu ( *:9090 ) ]
+sudo nano ports.conf ( Listen 9090 )
+sudo systemctl restart apache2
+
+
+sudo nano apache2.conf
+#ServerRoot "/etc/apache2"
+ServerName webserver1.gamracy.local
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
