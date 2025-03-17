@@ -178,11 +178,34 @@ sudo nano www.gamracy.local.conf
        CustomLog /var/log/apache2/www.gamracy.local_access.log combined
 </VirtualHost>
 
+sudo a2dissite 000-default.conf
+sudo a2ensite www.gamracy.local
+
+4  ;Serial 
+@
+@     IN.       A.     192.168.10.10 
+@
+
+www.  IN.       A.     192.168.10.10
 
 
+3.    ;Serial 
+1.0.0.  IN.  PTR    gamracy.local
+
+10.      IN.   PTR.  www.gamracy.local 
+
+
+
+
+
+sudo named-checkzone
+
+sudo rndc reload gamracy.local
+sudo rndc reload 10.168.192.in-addr.arpa 
+sudo systemctl reload apache2
 cd /etc/apache2/
 sudo nano sites-available/000-default.conf [ zmiana portu ( *:9090 ) ]
-sudo nano ports.conf ( Listen 9090 )
+sudo nano ports.conf ( Listen 80 i 8080 )
 sudo systemctl restart apache2
 
 
