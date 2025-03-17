@@ -1,3 +1,27 @@
+network:
+    ethernets:
+        enp0s3:
+            dhcp4: true
+        enp0s8:
+            addresses:
+            - 192.168.10.10/24
+            nameservers:
+                addresses:
+                - 8.8.8.8
+                - 8.8.4.4
+                search: []
+            routes:
+            -   to: default
+                via: 255.255.255.0
+   version: 2
+
+
+
+
+
+
+
+
 DHCP: 
 
 sudo apt install isc-dhcp-server
