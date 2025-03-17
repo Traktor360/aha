@@ -18,10 +18,6 @@ network:
 
 
 
-
-
-
-
 DHCP: 
 
 sudo apt install isc-dhcp-server
@@ -158,6 +154,29 @@ sudo systemctl status apache2
 ! wejdz na ip czy dziala strona !
 
 STRONA ZNAJDUJE SIE W /var/www/html/
+
+GDY TRZEBA WWW.DOMENA
+
+cd /etc/apache2/sites-available
+sudo nano www.gamracy.local.conf
+GNU nano 4.8    www.mydomain.local.conf
+<VirtualHost *:80>
+    ServerName www.mydomain.local
+    ServerAlias mydomain.local
+    DocumentRoot /var/www/www.mydomain.local/public_html
+    ErrorLog /var/log/apache2/www.mydomain.local_error.log
+    CustomLog /var/log/apache2/www.mydomain.local_access.log combined
+</VirtualHost>
+<VirtualHost *:8080>
+    ServerName www.mydomain.local
+    ServerAlias mydomain.local
+    DocumentRoot /var/www/www.mydomain.local/public_html
+    <Directory /var/www/www.mydomain.local/public_html>
+    Require all denied
+    </Directory>
+    ErrorLog /var/log/apache2/www.mydomain.local_error.log
+    CustomLog /var/log/apache2/www.mydomain.local_access.log combined
+</VirtualHost>
 
 
 
